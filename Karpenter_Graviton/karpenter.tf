@@ -9,7 +9,7 @@ resource "helm_release" "karpenter" {
   name       = "karpenter"
   repository = "https://charts.karpenter.sh"
   chart      = "karpenter"
-  version    = "0.20.0"  # Check for the latest version
+  version    = "0.36.2"
 
   set {
     name  = "controller.clusterName"
