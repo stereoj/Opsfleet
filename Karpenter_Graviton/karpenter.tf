@@ -1,10 +1,4 @@
 # Add Helm provider to install Karpenter
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-}
-
 resource "helm_release" "karpenter" {
   name       = "karpenter"
   repository = "https://charts.karpenter.sh"
@@ -21,10 +15,14 @@ resource "helm_release" "karpenter" {
   }
   set {
     name  = "controller.serviceAccount.create"
-    value = "true"
+    value = "false"
   }
   set {
     name  = "controller.serviceAccount.name"
     value = "karpenter-service-account"
+  }
+  set {
+    name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = "arn:aws:iam::${var.aws_account_id}:role/KarpenterControllerRole"
   }
 }
