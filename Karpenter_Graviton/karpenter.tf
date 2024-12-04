@@ -19,4 +19,12 @@ resource "helm_release" "karpenter" {
     name  = "controller.clusterEndpoint"
     value = module.eks.cluster_endpoint
   }
+  set {
+    name  = "controller.serviceAccount.create"
+    value = "true"
+  }
+  set {
+    name  = "controller.serviceAccount.name"
+    value = "karpenter-service-account"
+  }
 }
