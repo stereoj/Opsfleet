@@ -14,26 +14,23 @@ This project automates the creation of an EKS cluster on AWS with Karpenter for 
 1. **Clone the Repository**
 
    ```
-   git clone https://github.com/your-repo/eks-cluster-terraform.git
-   cd eks-cluster-terraform
+   git clone https://github.com/stereoj/Opsfleet.git
+   cd ./Opsfleet/Karpenter_Graviton
    ```
 
-2. **Update Variables**
-
-Update variables.tf with the vpc_id and subnet_ids values of your existing VPC.
-
-3. **Initialize and Apply Terraform**
+2. **Initialize, Plan and Apply Terraform**
 
 
    ```
    terraform init
+   terraform plan
    terraform apply
    ```
    
 4. **Configure kubectl for EKS Access**
 
    ```
-   aws eks update-kubeconfig --name $(terraform output -raw eks_cluster_name) --region us-west-2
+   aws eks --region us-east-1 update-kubeconfig --name karpenter-blueprints
    ```
 
 5. **Verify Karpenter Installation**
@@ -49,21 +46,35 @@ To deploy a workload on a specific architecture (x86 or ARM), specify the node s
 Example Pod for ARM (Graviton) Architecture
 
 ```
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: graviton-pod
+  name: workload-graviton
 spec:
-  nodeSelector:
-    "kubernetes.io/arch": "arm64"
-  containers:
-    - name: graviton-container
-      image: public.ecr.aws/amazonlinux/amazonlinux:latest
-      command: ["sleep", "3600"]
+  replicas: 5
+  selector:
+    matchLabels:
+      app: workload-graviton
+  template:
+    metadata:
+      labels:
+        app: workload-graviton
+    spec:
+      nodeSelector:
+        intent: apps
+        kubernetes.io/arch: arm64
+      containers:
+      - name: workload-flexible
+        image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 512m
+            memory: 512Mi 
 ```
 
 Deploy these pods using kubectl:
 
 ```
-kubectl apply -f graviton-pod.yaml
+kubectl apply -f workload-graviton.yaml
 ```
