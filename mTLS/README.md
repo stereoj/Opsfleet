@@ -1,6 +1,6 @@
-#Demonstrate mTLS between two services on EKS using Istio
+# Demonstrate mTLS between two services on EKS using Istio
 
-##Description
+## Description
 You have been asked to help a company improve its readiness for SOC2 compliance.
 One of the tasks is to enabled mutual TLS between services running on AWS.
 The CTO suggested installing Istio. Prepare a POC that does the following:
